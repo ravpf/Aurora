@@ -1,7 +1,11 @@
 # Aurora
 Theme for Wordpress 
 
-Aurora
+
+Aurora版权所有，免费开源。欢迎提交问题，bug。后续迭代修复，允许二开。
+
+源码下载请到Releases
+
 产品说明书
 功能清单 · 运行环境 · 安装部署 · 后台配置
 Aurora 是一套原创的苹果风格 WordPress 内容与社区主题，
