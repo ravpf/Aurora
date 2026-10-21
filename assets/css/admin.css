@@ -1,0 +1,1411 @@
+/* ==========================================================================
+   Aurora — admin skin
+   The same design language as the front end: system font stack, one soft
+   shadow, generous radii, a single accent, and the light gradient the front
+   page uses instead of flat white.
+
+   Everything is scoped to the admin and defines its own tokens, because
+   main.css is never loaded on these screens.
+   ========================================================================== */
+
+:root {
+  --au-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "SF Pro SC", "PingFang SC", "Hiragino Sans GB", "Helvetica Neue",
+    "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+  --au-font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  --au-bg: #f5f5f7;
+  --au-bg-gradient: radial-gradient(1200px 520px at 8% -12%, #eef3ff 0%, rgba(238, 243, 255, 0) 62%),
+    radial-gradient(900px 460px at 100% 0%, #f2fbf6 0%, rgba(242, 251, 246, 0) 58%);
+  --au-surface: #fff;
+  --au-surface-muted: #fafafa;
+  --au-text: #1d1d1f;
+  --au-text-secondary: #48484d;
+  --au-text-tertiary: #6e6e73;
+  --au-accent: #0071e3;
+  --au-accent-hover: #0077ed;
+  /* Filled buttons carry white text: #0071e3 lands at 4.0:1, #0066cc at 5.1:1. */
+  --au-accent-strong: #0066cc;
+  --au-accent-soft: rgba(0, 113, 227, 0.1);
+  --au-success: #1a8f45;
+  --au-warning: #b26a00;
+  --au-danger: #d70015;
+  --au-border: rgba(0, 0, 0, 0.08);
+  --au-border-strong: rgba(0, 0, 0, 0.14);
+  --au-fill: rgba(120, 120, 128, 0.1);
+  --au-fill-strong: rgba(120, 120, 128, 0.18);
+
+  --au-radius-lg: 20px;
+  --au-radius: 14px;
+  --au-radius-sm: 10px;
+  --au-radius-xs: 7px;
+
+  --au-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
+  --au-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --au-ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* --------------------------------------------------------------------------
+   Frame
+   -------------------------------------------------------------------------- */
+
+body.wp-admin,
+body.wp-admin button,
+body.wp-admin input,
+body.wp-admin select,
+body.wp-admin textarea {
+  font-family: var(--au-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+body.wp-admin {
+  background: var(--au-bg);
+  color: var(--au-text);
+}
+
+#wpcontent,
+#wpbody-content {
+  background: transparent;
+}
+
+#wpbody-content {
+  padding-bottom: 40px;
+}
+
+#wpbody-content::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--au-bg-gradient);
+  pointer-events: none;
+}
+
+/* One visible focus ring everywhere, matching the front end. */
+body.wp-admin :focus-visible {
+  outline: 2px solid var(--au-accent);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.wp-admin * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar and toolbar
+   -------------------------------------------------------------------------- */
+
+#adminmenu {
+  padding: 8px 0 24px;
+}
+
+#adminmenu li.menu-top {
+  margin: 2px 8px;
+  border-radius: var(--au-radius-sm);
+  transition: background-color 0.18s var(--au-ease);
+}
+
+#adminmenu li.menu-top > a.menu-top {
+  border-radius: var(--au-radius-sm);
+  font-weight: 500;
+}
+
+#adminmenu li.menu-top:hover,
+#adminmenu li.menu-top:focus-within {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#adminmenu li.current,
+#adminmenu li.wp-has-current-submenu {
+  background: var(--au-accent);
+  border-radius: var(--au-radius-sm);
+}
+
+#adminmenu li.wp-has-current-submenu .wp-submenu,
+#adminmenu li.current a.menu-top {
+  background: transparent;
+}
+
+#adminmenu .wp-submenu {
+  padding: 6px 0 6px 8px;
+}
+
+#adminmenu .wp-submenu a {
+  border-radius: var(--au-radius-xs);
+  transition: background-color 0.16s var(--au-ease), color 0.16s var(--au-ease);
+}
+
+#adminmenu .wp-submenu a:hover,
+#adminmenu .wp-submenu a:focus {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+#adminmenu .wp-submenu li.current a,
+#adminmenu .wp-submenu li.current a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* WP renders the "live preview" style header action inline with the h1; without
+   this it floats above the baseline of a 26px heading. */
+body.wp-admin .wrap h1.wp-heading-inline {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+body.wp-admin .wrap h1.wp-heading-inline + .page-title-action,
+body.wp-admin .wrap h1 + a.page-title-action {
+  vertical-align: middle;
+  color: var(--au-accent);
+  border-color: var(--au-accent);
+  margin-left: 10px;
+}
+
+body.wp-admin p.submit {
+  margin: 20px 0 0;
+  padding: 0;
+}
+
+/* 顶栏只有一处定义（见下面「admin bar」一节）。这里留空：两份 #wpadminbar
+   规则互相覆盖，是顶栏曾经"半白、边界看不见"的来源。 */
+
+#wpadminbar .ab-item,
+#wpadminbar a.ab-item {
+  font-family: var(--au-font);
+}
+
+#wpadminbar .ab-top-menu > li:hover > .ab-item {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* --------------------------------------------------------------------------
+   Page headings and tabs
+   -------------------------------------------------------------------------- */
+
+.wrap > h1,
+.wrap h1.wp-heading-inline {
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  color: var(--au-text);
+  margin-bottom: 6px;
+}
+
+.wrap h2.title,
+.wrap h2:not(.nav-tab-wrapper):not(.screen-reader-text) {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: 22px 0 4px;
+  border: 0;
+}
+
+.wrap h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.nav-tab-wrapper {
+  border: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 0 2px;
+  max-width: 900px;
+}
+
+.nav-tab {
+  margin: 0;
+  padding: 8px 16px;
+  border: 1px solid var(--au-border);
+  border-radius: 980px;
+  background: var(--au-surface);
+  color: var(--au-text-secondary);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  transition: background-color 0.18s var(--au-ease), color 0.18s var(--au-ease),
+    border-color 0.18s var(--au-ease);
+}
+
+.nav-tab:hover,
+.nav-tab:focus {
+  background: var(--au-surface-muted);
+  color: var(--au-text);
+}
+
+.nav-tab-active,
+.nav-tab-active:hover,
+.nav-tab-active:focus {
+  background: var(--au-accent);
+  border-color: var(--au-accent);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Surfaces
+   -------------------------------------------------------------------------- */
+
+.postbox,
+.stuffbox,
+#poststuff .postbox,
+.welcome-panel,
+#screen-meta,
+.components-card {
+  background: var(--au-surface);
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius-lg);
+  box-shadow: var(--au-shadow);
+  overflow: hidden;
+}
+
+.postbox-header,
+#poststuff .postbox-header {
+  border-bottom: 1px solid var(--au-border);
+  padding: 4px 8px;
+}
+
+.postbox .hndle,
+#poststuff h2.hndle {
+  font-size: 14.5px;
+  font-weight: 600;
+  padding: 12px 10px;
+}
+
+.postbox .inside {
+  padding: 14px 16px;
+}
+
+#screen-meta-links .show-settings {
+  border-radius: var(--au-radius-sm);
+  box-shadow: var(--au-shadow-sm);
+  border-color: var(--au-border);
+  color: var(--au-text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+
+body.wp-admin .wp-core-ui .button,
+body.wp-admin .wp-core-ui .button-secondary,
+body.wp-admin .wp-core-ui .button-primary,
+body.wp-admin .wp-core-ui .page-title-action {
+  border-radius: var(--au-radius-sm);
+  font-family: var(--au-font);
+  font-weight: 500;
+  padding: 5px 14px;
+  min-height: 34px;
+  line-height: 1.6;
+  box-shadow: none;
+  transition: background-color 0.18s var(--au-ease), border-color 0.18s var(--au-ease),
+    transform 0.18s var(--au-ease), color 0.18s var(--au-ease);
+}
+
+body.wp-admin .wp-core-ui .button:active,
+body.wp-admin .wp-core-ui .button-primary:active {
+  transform: scale(0.985);
+}
+
+body.wp-admin .wp-core-ui .button-primary,
+body.wp-admin .wrap .button-primary,
+body.wp-admin #wpbody .button-primary {
+  /* Core ships #3858e9 with a heavier selector; the site accent has to win. */
+  background: var(--au-accent-strong, #0066cc) !important;
+  border-color: var(--au-accent-strong, #0066cc) !important;
+  color: #fff !important;
+}
+
+body.wp-admin .wp-core-ui .button-primary:hover,
+body.wp-admin .wp-core-ui .button-primary:focus {
+  background: var(--au-accent-hover);
+  border-color: var(--au-accent-hover);
+  color: #fff;
+}
+
+body.wp-admin .wp-core-ui .button-secondary:hover,
+body.wp-admin .wp-core-ui .button:hover {
+  border-color: var(--au-border-strong);
+  background: var(--au-surface-muted);
+  color: var(--au-text);
+}
+
+/* --------------------------------------------------------------------------
+   Form controls
+   -------------------------------------------------------------------------- */
+
+body.wp-admin input[type="text"],
+body.wp-admin input[type="search"],
+body.wp-admin input[type="password"],
+body.wp-admin input[type="email"],
+body.wp-admin input[type="url"],
+body.wp-admin input[type="number"],
+body.wp-admin input[type="tel"],
+body.wp-admin input[type="date"],
+body.wp-admin select,
+body.wp-admin textarea {
+  border: 1px solid var(--au-border-strong);
+  border-radius: var(--au-radius-sm);
+  /* background-color, never the shorthand: `background` also clears the native
+     select chevron that WordPress paints as a background-image. */
+  background-color: var(--au-surface);
+  color: var(--au-text);
+  padding: 6px 10px;
+  min-height: 34px;
+  box-shadow: none;
+  transition: border-color 0.18s var(--au-ease), box-shadow 0.18s var(--au-ease),
+    background-color 0.18s var(--au-ease);
+}
+
+body.wp-admin textarea,
+body.wp-admin textarea.code,
+body.wp-admin .large-text.code {
+  border-radius: var(--au-radius);
+  font-family: var(--au-font-mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  padding: 10px 12px;
+}
+
+body.wp-admin input[type="text"]:focus,
+body.wp-admin input[type="password"]:focus,
+body.wp-admin input[type="number"]:focus,
+body.wp-admin input[type="url"]:focus,
+body.wp-admin select:focus,
+body.wp-admin textarea:focus {
+  border-color: var(--au-accent);
+  box-shadow: 0 0 0 3px var(--au-accent-soft);
+  outline: none;
+}
+
+body.wp-admin code,
+body.wp-admin pre.code {
+  font-family: var(--au-font-mono);
+  background: var(--au-fill);
+  border-radius: var(--au-radius-xs);
+  padding: 2px 6px;
+  color: var(--au-text-secondary);
+}
+
+body.wp-admin pre.code {
+  padding: 12px 14px;
+  border: 1px solid var(--au-border);
+  display: block;
+  overflow-x: auto;
+  line-height: 1.7;
+}
+
+body.wp-admin .form-table th {
+  font-weight: 600;
+  color: var(--au-text);
+  padding: 16px 10px 16px 0;
+  width: 190px;
+}
+
+body.wp-admin .form-table td {
+  padding: 12px 10px;
+}
+
+body.wp-admin .form-table tr + tr th,
+body.wp-admin .form-table tr + tr td {
+  border-top: 1px solid var(--au-border);
+}
+
+/* Checkbox rows: the settings markup sets its own inline spacing on these labels,
+   so only the control's own gap is set here. */
+body.wp-admin .form-table td input[type="checkbox"],
+body.wp-admin .form-table td input[type="radio"] {
+  margin-right: 6px;
+}
+
+body.wp-admin p.description,
+body.wp-admin .description {
+  color: var(--au-text-tertiary);
+  font-size: 12.5px;
+  line-height: 1.7;
+  max-width: 720px;
+}
+
+body.wp-admin input[type="checkbox"],
+body.wp-admin input[type="radio"] {
+  border-radius: 5px;
+  border-color: var(--au-border-strong);
+}
+
+body.wp-admin input[type="checkbox"]:checked {
+  background: var(--au-accent);
+  border-color: var(--au-accent);
+}
+
+body.wp-admin input[type="checkbox"]:checked::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: no-repeat center/70% url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Notices
+   -------------------------------------------------------------------------- */
+
+body.wp-admin .notice {
+  border: 1px solid var(--au-border);
+  border-left-width: 4px;
+  border-radius: var(--au-radius);
+  background: var(--au-surface);
+  box-shadow: var(--au-shadow-sm);
+  padding: 10px 14px;
+  margin: 12px 0;
+}
+
+body.wp-admin .notice p {
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+body.wp-admin .notice-success {
+  border-left-color: var(--au-success);
+}
+
+body.wp-admin .notice-error {
+  border-left-color: var(--au-danger);
+}
+
+body.wp-admin .notice-warning {
+  border-left-color: var(--au-warning);
+}
+
+body.wp-admin .notice-info {
+  border-left-color: var(--au-accent);
+}
+
+body.wp-admin .notice-success::before,
+body.wp-admin .notice-error::before,
+body.wp-admin .notice-warning::before,
+body.wp-admin .notice-info::before {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Tables
+   -------------------------------------------------------------------------- */
+
+body.wp-admin table.widefat {
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius);
+  box-shadow: var(--au-shadow-sm);
+  overflow: hidden;
+  background: var(--au-surface);
+}
+
+body.wp-admin table.widefat thead th,
+body.wp-admin table.widefat thead td {
+  background: var(--au-surface-muted);
+  border-bottom: 1px solid var(--au-border);
+  font-weight: 600;
+  color: var(--au-text-secondary);
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+  padding: 10px 12px;
+}
+
+body.wp-admin table.widefat tbody td,
+body.wp-admin table.widefat tbody th {
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--au-text-secondary);
+}
+
+body.wp-admin table.striped > tbody > :nth-child(odd) {
+  background: var(--au-surface-muted);
+}
+
+body.wp-admin table.widefat tbody tr:hover {
+  background: var(--au-accent-soft);
+}
+
+body.wp-admin table.widefat strong {
+  color: var(--au-text);
+}
+
+body.wp-admin .tablenav {
+  height: auto;
+  margin: 12px 0;
+}
+
+body.wp-admin .tablenav .tablenav-pages a,
+body.wp-admin .tablenav .tablenav-pages span.current {
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius-xs);
+  margin: 0 2px;
+  padding: 3px 8px;
+}
+
+body.wp-admin .tablenav .tablenav-pages span.current {
+  background: var(--au-accent);
+  border-color: var(--au-accent);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Aurora screens
+   -------------------------------------------------------------------------- */
+
+.aurora-ai-admin__stats,
+.aurora-admin__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 12px;
+  margin: 18px 0 6px;
+  max-width: 980px;
+}
+
+.aurora-ai-admin__stats > div,
+.aurora-admin__stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  background: var(--au-surface);
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius);
+  box-shadow: var(--au-shadow-sm);
+}
+
+.aurora-ai-admin__stats strong,
+.aurora-admin__stats strong {
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--au-text);
+}
+
+.aurora-ai-admin__stats span,
+.aurora-admin__stats span {
+  font-size: 12.5px;
+  color: var(--au-text-tertiary);
+}
+
+.aurora-ai-admin__group {
+  max-width: 980px;
+  margin: 14px 0;
+  padding: 14px 16px 16px;
+  background: var(--au-surface);
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius-lg);
+  box-shadow: var(--au-shadow-sm);
+}
+
+.aurora-ai-admin__group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.aurora-ai-admin__group-head input[type="text"] {
+  font-weight: 600;
+  flex: 0 1 260px;
+}
+
+.aurora-ai-admin__group-head code {
+  font-size: 11.5px;
+}
+
+.aurora-ai-admin__skip,
+.aurora-ai-admin__del {
+  font-size: 12.5px;
+  color: var(--au-text-tertiary);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.aurora-ai-admin__del {
+  margin-left: auto;
+  color: var(--au-danger);
+}
+
+.aurora-ai-admin__group textarea {
+  width: 100%;
+}
+
+.aurora-ai-admin__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  max-width: 980px;
+  padding: 14px 16px;
+  background: var(--au-surface);
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius-lg);
+  box-shadow: var(--au-shadow-sm);
+}
+
+.aurora-ai-admin__log {
+  margin-top: 8px;
+}
+
+.aurora-ai-admin__log td {
+  vertical-align: top;
+}
+
+.aurora-ai-admin__log em {
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 980px;
+  background: var(--au-fill);
+  color: var(--au-text-tertiary);
+  font-size: 11px;
+  font-style: normal;
+}
+
+.aurora-ai-admin__err {
+  color: var(--au-danger);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.aurora-ai-admin__map {
+  margin-top: 8px;
+  border-collapse: separate;
+  border-spacing: 0 6px;
+}
+
+.aurora-ai-admin__map td {
+  padding: 0 12px 0 0;
+  font-size: 13px;
+}
+
+.aurora-ai-admin__map code {
+  margin-left: 6px;
+  font-size: 11px;
+}
+
+.aurora-tabs-admin {
+  margin-bottom: 4px;
+}
+
+.aurora-admin form[style*="max-width"] {
+  /* The settings pages set an inline max-width; give it the same card treatment
+     as everything else instead of leaving it to float. */
+  background: var(--au-surface);
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius-lg);
+  box-shadow: var(--au-shadow);
+  box-sizing: border-box;
+  padding: 8px 22px 22px;
+  max-width: 900px !important;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+
+@media screen and (max-width: 782px) {
+  body.wp-admin .form-table th {
+    width: auto;
+  }
+
+  .aurora-ai-admin__stats,
+  .aurora-admin__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .aurora-ai-admin__group-head {
+    align-items: stretch;
+  }
+
+  .aurora-ai-admin__del {
+    margin-left: 0;
+  }
+
+  .aurora-admin form[style*="max-width"] {
+    padding: 8px 14px 18px;
+  }
+}
+
+
+/* ==========================================================================
+   Core screens — the part of wp-admin the theme did not paint yet.
+   List tables, status views, dashboard, media library, editor chrome, forms
+   and footer. Tokens only; no layout or behaviour is changed.
+   ========================================================================== */
+
+body.wp-admin {
+  background-color: var(--au-bg);
+  /* No background-attachment: fixed — it forces a full repaint on every scroll
+     and, combined with the blurred admin bar, stalled headless rendering hard. */
+  background-image: var(--au-bg-gradient);
+  background-repeat: no-repeat;
+  background-size: 100% 720px;
+}
+
+/* ---------------------------------------------------------------- admin bar */
+
+#wpadminbar {
+  /* 0.78 的白玻璃压在 #f5f5f7 上等于没有边界；0.9 + 发丝线才看得出这是一条栏。 */
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid var(--au-border-strong);
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.04);
+}
+
+#wpadminbar,
+#wpadminbar a,
+#wpadminbar .ab-label,
+#wpadminbar .ab-item {
+  color: var(--au-text-secondary) !important;
+}
+
+#wpadminbar .ab-empty-item,
+#wpadminbar > #wp-toolbar > ul > li > .ab-item { border-radius: 8px; }
+
+#wpadminbar > #wp-toolbar > ul > li:hover > .ab-item,
+#wpadminbar > #wp-toolbar > ul > li > .ab-item:focus,
+#wpadminbar.nojq .quicklinks .ab-top-menu > li > .ab-item:focus,
+#wpadminbar:not(.mobile) .ab-top-menu > li:hover > .ab-item {
+  background: var(--au-fill) !important;
+  color: var(--au-text) !important;
+}
+
+#wpadminbar .ab-top-menu > li.hover > .ab-item,
+#wpadminbar #wp-admin-bar-my-account.with-avatar > .ab-item img.avatar {
+  border-radius: 999px;
+}
+
+#wpadminbar #wp-admin-bar-site-name > .ab-item::before { color: var(--au-accent); }
+
+#wpadminbar .ab-sub-wrapper,
+#wpadminbar ul#wp-admin-bar-root-default > li .ab-sub-wrapper {
+  border-radius: 14px;
+  border: 1px solid var(--au-border);
+  background: var(--au-surface);
+  box-shadow: var(--au-shadow);
+  overflow: hidden;
+}
+
+#wpadminbar .quicklinks .menupop ul li a,
+#wpadminbar .ab-submenu .ab-item { color: var(--au-text-secondary) !important; }
+
+#wpadminbar .quicklinks .menupop ul li a:hover,
+#wpadminbar .ab-submenu .ab-item:hover {
+  background: var(--au-fill) !important;
+  color: var(--au-text) !important;
+}
+
+/* ------------------------------------------------------------------- frame */
+
+body.wp-admin #wpcontent { padding-left: 22px; }
+
+body.wp-admin .wrap { margin: 18px 20px 0 2px; }
+
+body.wp-admin .wrap > h1,
+body.wp-admin .wrap > h1.wp-heading-inline,
+body.wp-admin h1.wp-heading-inline {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--au-text);
+  padding: 0 0 4px;
+}
+
+body.wp-admin .wrap .page-title-action,
+body.wp-admin .wrap a.page-title-action {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  margin-left: 10px;
+  padding: 0 14px;
+  border: 1px solid var(--au-border-strong);
+  border-radius: 999px;
+  background: var(--au-surface);
+  color: var(--au-text) !important;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--au-shadow-sm);
+  transition: background 0.2s var(--au-ease), transform 0.2s var(--au-ease);
+}
+
+body.wp-admin .wrap .page-title-action:hover {
+  background: var(--au-fill);
+  transform: translateY(-1px);
+}
+
+body.wp-admin #wpbody-content { padding-bottom: 40px; }
+
+body.wp-admin #wpfooter {
+  color: var(--au-text-tertiary);
+  border-top: 1px solid var(--au-border);
+  padding: 14px 20px;
+}
+
+/* Status views (.subsubsub) become pills */
+body.wp-admin .subsubsub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 14px;
+  padding: 0;
+  list-style: none;
+  float: none;
+}
+
+body.wp-admin .subsubsub li { margin: 0; color: transparent; }
+
+body.wp-admin .subsubsub li::after { content: none; }
+
+body.wp-admin .subsubsub a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 13px;
+  border: 1px solid var(--au-border);
+  border-radius: 999px;
+  background: var(--au-surface);
+  color: var(--au-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+body.wp-admin .subsubsub a .count { color: var(--au-text-tertiary); font-weight: 600; }
+
+body.wp-admin .subsubsub a:hover { background: var(--au-fill); color: var(--au-text); }
+
+body.wp-admin .subsubsub a.current {
+  background: var(--au-accent);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 700;
+}
+
+body.wp-admin .subsubsub a.current .count { color: rgba(255, 255, 255, 0.82); }
+
+/* ------------------------------------------------------------- list tables */
+
+body.wp-admin .wp-list-table {
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius);
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--au-surface);
+  box-shadow: var(--au-shadow);
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+body.wp-admin .wp-list-table thead th,
+body.wp-admin .wp-list-table thead td {
+  background: var(--au-surface-muted);
+  border-bottom: 1px solid var(--au-border);
+  color: var(--au-text-tertiary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  padding: 12px 10px;
+}
+
+body.wp-admin .wp-list-table thead th a,
+body.wp-admin .wp-list-table thead th a span { color: var(--au-text-secondary); text-decoration: none; }
+
+body.wp-admin .wp-list-table tbody td,
+body.wp-admin .wp-list-table tbody th {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--au-border);
+  color: var(--au-text-secondary);
+  vertical-align: middle;
+}
+
+body.wp-admin .wp-list-table tbody tr:last-child td,
+body.wp-admin .wp-list-table tbody tr:last-child th { border-bottom: 0; }
+
+body.wp-admin .wp-list-table tbody tr:nth-child(odd) { background: transparent; }
+
+body.wp-admin .wp-list-table tbody tr:hover { background: rgba(120, 120, 128, 0.045); }
+
+body.wp-admin .wp-list-table tbody td.column-title strong,
+body.wp-admin .wp-list-table tbody td.column-name strong { color: var(--au-text); }
+
+body.wp-admin .wp-list-table .row-title,
+body.wp-admin .wp-list-table .row-title:hover {
+  color: var(--au-text);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+body.wp-admin .wp-list-table .row-title:hover { color: var(--au-accent); }
+
+body.wp-admin .wp-list-table .row-actions { color: var(--au-text-tertiary); font-size: 12px; }
+
+body.wp-admin .wp-list-table .row-actions a { color: var(--au-text-secondary); text-decoration: none; }
+
+body.wp-admin .wp-list-table .row-actions a:hover { color: var(--au-accent); }
+
+body.wp-admin .wp-list-table .column-author img,
+body.wp-admin .wp-list-table .column-comment .avatar,
+body.wp-admin .wp-list-table .avatar,
+body.wp-admin .wp-list-table img.avatar { border-radius: 999px; }
+
+body.wp-admin .wp-list-table td.column-primary .toggle-row { border-radius: 999px; }
+
+body.wp-admin .wp-list-table.striped > tbody > :nth-child(odd) { background: transparent; }
+
+body.wp-admin .wp-list-table .check-column input[type="checkbox"] { margin-left: 2px; }
+
+/* Bulk actions + filters row */
+body.wp-admin .tablenav {
+  height: auto;
+  margin: 12px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+body.wp-admin .tablenav .actions { padding: 0; display: flex; gap: 8px; align-items: center; }
+
+body.wp-admin .tablenav .tablenav-pages { margin: 0 0 0 auto; display: flex; align-items: center; gap: 6px; }
+
+body.wp-admin .tablenav-pages .page-numbers,
+body.wp-admin .tablenav-pages a.page-numbers {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--au-border);
+  border-radius: 9px;
+  background: var(--au-surface);
+  color: var(--au-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+body.wp-admin .tablenav-pages .page-numbers.current {
+  background: var(--au-accent);
+  border-color: transparent;
+  color: #fff;
+}
+
+body.wp-admin .tablenav-pages .page-numbers:hover { background: var(--au-fill); }
+
+body.wp-admin .search-box { display: inline-flex; gap: 8px; align-items: center; margin-bottom: 6px; }
+
+/* Forms */
+body.wp-admin input[type="text"],
+body.wp-admin input[type="search"],
+body.wp-admin input[type="url"],
+body.wp-admin input[type="email"],
+body.wp-admin input[type="number"],
+body.wp-admin input[type="password"],
+body.wp-admin input[type="tel"],
+body.wp-admin input[type="date"],
+body.wp-admin textarea,
+body.wp-admin select {
+  border: 1px solid var(--au-border-strong);
+  border-radius: var(--au-radius-sm);
+  background: var(--au-surface);
+  color: var(--au-text);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.02);
+  padding: 6px 10px;
+  min-height: 34px;
+  transition: border-color 0.2s var(--au-ease), box-shadow 0.2s var(--au-ease);
+}
+
+body.wp-admin textarea { padding: 10px 12px; }
+
+body.wp-admin input[type="text"]:focus,
+body.wp-admin input[type="search"]:focus,
+body.wp-admin input[type="url"]:focus,
+body.wp-admin input[type="email"]:focus,
+body.wp-admin input[type="number"]:focus,
+body.wp-admin input[type="password"]:focus,
+body.wp-admin textarea:focus,
+body.wp-admin select:focus {
+  border-color: var(--au-accent);
+  box-shadow: 0 0 0 3px var(--au-accent-soft);
+  outline: 0;
+}
+
+body.wp-admin select {
+  padding-right: 26px;
+  /* Long hand so the native arrow is not wiped out */
+  background-color: var(--au-surface);
+}
+
+body.wp-admin .form-table th {
+  color: var(--au-text);
+  font-weight: 600;
+  padding-top: 18px;
+}
+
+body.wp-admin .form-table td { color: var(--au-text-secondary); padding-top: 14px; }
+
+body.wp-admin .form-table td p.description,
+body.wp-admin p.description { color: var(--au-text-tertiary); font-size: 12px; line-height: 1.6; }
+
+body.wp-admin fieldset legend { color: var(--au-text); font-weight: 600; }
+
+/* --------------------------------------------------------------- postboxes */
+
+body.wp-admin .postbox,
+body.wp-admin #dashboard-widgets .postbox {
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius) !important;
+  background: var(--au-surface);
+  box-shadow: var(--au-shadow-sm);
+  overflow: hidden;
+}
+
+body.wp-admin .postbox .postbox-header,
+body.wp-admin .postbox h2,
+body.wp-admin .postbox h3 {
+  border-bottom: 1px solid var(--au-border);
+  background: var(--au-surface);
+  color: var(--au-text);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+body.wp-admin .postbox .hndle { padding: 12px 16px; }
+
+body.wp-admin .postbox .inside { padding: 14px 16px; }
+
+body.wp-admin #dashboard-widgets .postbox { margin-bottom: 18px; }
+
+body.wp-admin #dashboard-widgets .postbox .inside { color: var(--au-text-secondary); }
+
+body.wp-admin #dashboard-widgets h2 { font-size: 14px; }
+
+body.wp-admin #dashboard_activity .activity-block { color: var(--au-text-secondary); }
+
+/* Notices keep the left colour bar shape used on the theme screens */
+body.wp-admin .notice,
+body.wp-admin div.updated,
+body.wp-admin div.error {
+  border: 1px solid var(--au-border);
+  border-left: 4px solid var(--au-accent);
+  border-radius: var(--au-radius-sm);
+  background: var(--au-surface);
+  box-shadow: var(--au-shadow-sm);
+  color: var(--au-text-secondary);
+  padding: 12px 14px;
+}
+
+body.wp-admin .notice-success { border-left-color: var(--au-success); }
+
+body.wp-admin .notice-warning { border-left-color: var(--au-warning); }
+
+body.wp-admin .notice-error { border-left-color: var(--au-danger); }
+
+body.wp-admin .notice p { font-size: 13px; line-height: 1.6; }
+
+/* Header tabs (settings screens) */
+body.wp-admin .nav-tab-wrapper { border-bottom: 1px solid var(--au-border); display: flex; gap: 6px; padding-bottom: 0; }
+
+body.wp-admin .nav-tab {
+  border: 1px solid transparent;
+  border-radius: 999px 999px 0 0;
+  background: transparent;
+  color: var(--au-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 16px;
+  margin: 0;
+}
+
+body.wp-admin .nav-tab:hover { background: var(--au-fill); color: var(--au-text); }
+
+body.wp-admin .nav-tab-active,
+body.wp-admin .nav-tab-active:hover {
+  background: var(--au-surface);
+  border-color: var(--au-border);
+  border-bottom-color: var(--au-surface);
+  color: var(--au-accent);
+}
+
+/* Screen options / help */
+body.wp-admin #screen-meta,
+body.wp-admin #screen-meta-links .show-settings {
+  border-color: var(--au-border);
+  border-radius: var(--au-radius-sm);
+  background: var(--au-surface);
+  color: var(--au-text-secondary);
+  box-shadow: var(--au-shadow-sm);
+}
+
+/* ---------------------------------------------------------- media library */
+
+body.wp-admin .media-frame,
+body.wp-admin .media-modal-content,
+body.wp-admin .media-frame-content,
+body.wp-admin .media-sidebar,
+body.wp-admin .attachments-browser .media-toolbar {
+  background: var(--au-surface);
+  color: var(--au-text-secondary);
+}
+
+body.wp-admin .media-modal-content { border-radius: var(--au-radius); }
+
+body.wp-admin .attachment,
+body.wp-admin .media-frame .attachment-preview,
+body.wp-admin .media-frame .thumbnail { border-radius: var(--au-radius-sm); }
+
+body.wp-admin .media-frame .attachment.details { box-shadow: 0 0 0 3px var(--au-accent-soft), 0 0 0 1px var(--au-accent); }
+
+body.wp-admin .media-frame-router,
+body.wp-admin .media-frame-toolbar,
+body.wp-admin .media-toolbar { border-color: var(--au-border); }
+
+body.wp-admin .media-button,
+body.wp-admin .media-frame .button { border-radius: 999px; }
+
+/* ------------------------------------------------------------ block editor */
+
+body.wp-admin.block-editor-page {
+  background: var(--au-bg) !important;
+  background-image: var(--au-bg-gradient);
+  background-repeat: no-repeat;
+  background-size: 100% 720px;
+}
+
+body.block-editor-page .editor-styles-wrapper { background: transparent; }
+
+body.block-editor-page .edit-post-layout__content,
+body.block-editor-page .editor-editor-interface {
+  background: transparent;
+}
+
+body.block-editor-page .edit-post-visual-editor__post-title-wrapper,
+body.block-editor-page .editor-styles-wrapper .wp-block {
+  font-family: var(--au-font);
+}
+
+body.block-editor-page .components-panel,
+body.block-editor-page .edit-post-sidebar,
+body.block-editor-page .edit-post-sidebar__panel-tabs {
+  border-color: var(--au-border);
+  background: var(--au-surface);
+}
+
+body.block-editor-page .edit-post-header {
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--au-border);
+}
+
+body.block-editor-page .components-button.is-primary {
+  background: var(--au-accent);
+  border-radius: 999px;
+}
+
+body.block-editor-page .components-button.is-secondary { border-radius: 999px; }
+
+/* Classic editor box */
+body.wp-admin #poststuff #post-body.columns-2 { margin-right: 320px; }
+
+body.wp-admin #titlediv #title {
+  font-size: 18px;
+  padding: 10px 14px;
+  height: auto;
+}
+
+body.wp-admin #postdivrich .wp-editor-tools { padding-top: 6px; }
+
+/* Users, plugins, comments share the same table skin; a few specifics: */
+body.wp-admin .plugins .active th.check-column { border-left: 3px solid var(--au-success); }
+
+body.wp-admin .plugins .inactive th.check-column { border-left: 3px solid var(--au-border-strong); }
+
+body.wp-admin .plugins .plugin-title strong { color: var(--au-text); }
+
+body.wp-admin .plugins .row-actions .delete a,
+body.wp-admin .row-actions .delete a { color: var(--au-danger); }
+
+/* Tooltips / help bubbles inherit the card language */
+body.wp-admin .tippy-box,
+body.wp-admin .wp-pointer-content {
+  border-radius: var(--au-radius-sm);
+  border: 1px solid var(--au-border);
+  box-shadow: var(--au-shadow);
+  background: var(--au-surface);
+  color: var(--au-text-secondary);
+}
+
+body.wp-admin .wp-pointer-arrow-inner { border-bottom-color: var(--au-surface); }
+
+/* Colour inputs and switches stay native, only their frame softens */
+body.wp-admin .wp-picker-container .wp-color-result.button { border-radius: 999px; }
+
+
+/* ==========================================================================
+   Sidebar follows the front end: light glass instead of the dark core menu.
+   Core paints the anchor, not the list item, so the overrides have to target
+   the anchors (that is why the previous rule still showed the default blue).
+   ========================================================================== */
+
+body.wp-admin #adminmenuback,
+body.wp-admin #adminmenuwrap,
+body.wp-admin #adminmenu {
+  /* 0.72 让仪表盘的模块标题从菜单背后透出来，看起来像"菜单是透明的"。
+     0.9 + 发丝线：仍然能感觉到背后的页面，但读起来是一块面。 */
+  background: rgba(255, 255, 255, 0.9) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
+}
+
+body.wp-admin #adminmenu { border-right: 1px solid var(--au-border-strong); }
+
+
+
+body.wp-admin #adminmenu a.menu-top,
+body.wp-admin #adminmenu .wp-submenu a,
+body.wp-admin #adminmenu .wp-menu-name { color: var(--au-text-secondary) !important; }
+
+body.wp-admin #adminmenu div.wp-menu-image::before,
+body.wp-admin #adminmenu .wp-menu-arrow,
+body.wp-admin #adminmenu .wp-menu-arrow div { color: var(--au-text-tertiary) !important; }
+
+body.wp-admin #adminmenu li.menu-top:hover > a.menu-top,
+body.wp-admin #adminmenu li.menu-top:focus > a.menu-top {
+  background: var(--au-fill) !important;
+  color: var(--au-text) !important;
+}
+
+body.wp-admin #adminmenu li.current > a.menu-top,
+body.wp-admin #adminmenu li.wp-has-current-submenu > a.wp-has-current-submenu,
+body.wp-admin #adminmenu li.wp-has-current-submenu > a.menu-top,
+body.wp-admin #adminmenu li.menu-top.current > a.menu-top {
+  background: var(--au-accent) !important;
+  color: #fff !important;
+  border-radius: var(--au-radius-sm);
+}
+
+body.wp-admin #adminmenu li.current div.wp-menu-image::before,
+body.wp-admin #adminmenu li.wp-has-current-submenu div.wp-menu-image::before,
+body.wp-admin #adminmenu li.current .wp-menu-name {
+  color: #fff !important;
+}
+
+body.wp-admin #adminmenu .wp-submenu { background: transparent !important; padding: 4px 0 8px 6px; }
+
+/* Folded menu: the submenu stops being inline and becomes a flyout over the
+   dashboard. It needs its own glass, or the page text runs straight through it. */
+body.folded #adminmenu .wp-submenu,
+body.folded #adminmenu li.menu-top:hover > .wp-submenu,
+body.folded #adminmenu li.opensub > .wp-submenu {
+  background: rgba(255, 255, 255, 0.94) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  backdrop-filter: saturate(180%) blur(16px);
+  border: 1px solid var(--au-border-strong);
+  border-left: 0;
+  border-radius: 0 var(--au-radius) var(--au-radius) 0;
+  box-shadow: var(--au-shadow-md);
+  padding: 6px 6px 8px !important;
+  z-index: 99999;
+}
+
+@media (min-width: 783px) {
+  body.auto-fold #adminmenu .wp-submenu,
+  body.auto-fold #adminmenu li.menu-top:hover > .wp-submenu,
+  body.auto-fold #adminmenu li.opensub > .wp-submenu {
+    background: rgba(255, 255, 255, 0.94) !important;
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    backdrop-filter: saturate(180%) blur(16px);
+    border: 1px solid var(--au-border-strong);
+    border-left: 0;
+    border-radius: 0 var(--au-radius) var(--au-radius) 0;
+    box-shadow: var(--au-shadow-md);
+    padding: 6px 6px 8px !important;
+    z-index: 99999;
+  }
+}
+
+
+body.wp-admin #adminmenu .wp-submenu a { color: var(--au-text-tertiary) !important; }
+
+body.wp-admin #adminmenu .wp-submenu a:hover,
+body.wp-admin #adminmenu .wp-submenu a:focus {
+  background: var(--au-fill) !important;
+  color: var(--au-text) !important;
+}
+
+/* Core paints the *li* of the current submenu row solid accent and leaves the
+   <a> transparent; once the <a> got a 12% tint the text sat dark-blue-on-blue.
+   Neutralise the row, keep the pill on the link. */
+body.wp-admin #adminmenu .wp-submenu li.current,
+body.wp-admin #adminmenu .wp-submenu li.current:hover {
+  background: transparent !important;
+}
+
+body.wp-admin #adminmenu .wp-submenu li.current a,
+body.wp-admin #adminmenu .wp-submenu li.current a:hover {
+  background: var(--au-accent-soft) !important;
+  /* #0071e3 on the soft tint is 4.1:1 at 13px; the strong accent is 4.9:1. */
+  color: var(--au-accent-strong) !important;
+  font-weight: 600;
+}
+
+body.wp-admin #adminmenu li.wp-has-current-submenu .wp-submenu .wp-submenu-head,
+body.wp-admin #adminmenu .wp-submenu-wrap { background: transparent !important; color: var(--au-text-secondary) !important; }
+
+body.wp-admin #collapse-button,
+body.wp-admin #collapse-button:hover { color: var(--au-text-tertiary) !important; }
+
+body.wp-admin #adminmenu .awaiting-mod,
+body.wp-admin #adminmenu .update-plugins {
+  background: var(--au-danger) !important;
+  color: #fff !important;
+  border-radius: 999px;
+}
+
+body.wp-admin #adminmenu .wp-menu-separator,
+body.wp-admin #adminmenu li.wp-menu-separator { background: transparent; }
+
+body.wp-admin #wpwrap,
+body.wp-admin #wpcontent,
+body.wp-admin #wpbody,
+body.wp-admin #wpbody-content { background: transparent; }
+
+/* Plugins: mark the enabled plugin with the same accent bar used elsewhere */
+body.wp-admin .plugins tr.active th.check-column,
+body.wp-admin .plugins tr.active td.check-column { box-shadow: inset 3px 0 0 var(--au-success); }
+
+body.wp-admin .plugins tr.inactive th.check-column { box-shadow: inset 3px 0 0 transparent; }
+
+
+/* AI 写作助手面板 */
+.aurora-aiw__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.aurora-aiw__state { font-size: 12px; color: #646970; }
+.aurora-aiw__off { margin: 10px 0 0; color: #b32d2e; }
+.aurora-aiw__out { margin-top: 14px; padding: 14px 16px; border: 1px solid #dcdcde; border-radius: 10px; background: #fbfbfc; }
+.aurora-aiw__text { max-height: 320px; overflow: auto; font-size: 13.5px; line-height: 1.75; color: #1d2327; }
+.aurora-aiw__text p { margin: 0 0 10px; }
+.aurora-aiw__ops { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.aurora-aiw__title {
+	display: block; width: 100%; text-align: left; padding: 9px 12px; margin-bottom: 6px;
+	border: 1px solid #dcdcde; border-radius: 8px; background: #fff; cursor: pointer; font-size: 14px;
+}
+.aurora-aiw__title:hover { border-color: #2271b1; color: #2271b1; }
